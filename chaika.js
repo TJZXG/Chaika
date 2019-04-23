@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const version = require('./package.json').version;
-const config = require('./config.json');
+const botSecretToken = process.env.botSecretToken;
 console.log("Running version " + version);
 var moment = require('moment-timezone');
 const cmdList = "c!help: You already know what this does!\n" +
@@ -148,4 +148,4 @@ function richPresence() {
 setInterval(richPresence, 300000); // Change rich presence every 5 minutes
 
 // Get your bot's secret token from: https://discordapp.com/developers/applications/
-client.login(config.botSecretToken);
+client.login(botSecretToken);

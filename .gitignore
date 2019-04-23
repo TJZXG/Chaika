@@ -2,6 +2,7 @@
 config.json
 gitignore.txt
 bot_add_link.txt
+Heroku_readme.txt
 
 # Logs
 logs
