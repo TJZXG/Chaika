@@ -1,0 +1,40 @@
+{
+  "name": "chaika.js",
+  "version": "0.0.1",
+  "description": "Chaika - a Discord bot",
+  "main": "chaika.js",
+  "engines": {
+  "node": "11.x",
+  "npm": "*"
+  },
+  "author": "TJZXG",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.25",
+    "snekfetch": "^3.6.4"
+  },
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "tests"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+	"start": "node chaika.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TJZXG/Chaika.git"
+  },
+  "keywords": [
+    "heroku",
+    "discord.js"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TJZXG/Chaika/issues"
+  },
+  "homepage": "https://github.com/TJZXG/Chaika#readme"
+}
