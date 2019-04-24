@@ -37,7 +37,7 @@ function command(msg) {
         msg.reply("The current version is " + version);
     } else if (primaryCommand == "help") {
         helpCommand(cmdArguments, msg);
-    } else if (primaryCommand == "time") {
+    } else if (primaryCommand == "time" && typeof cmdArguments[0] !== 'undefined') {
         timeCheck = cmdArguments[0].split(":");
         hour = parseInt(timeCheck[0]);
         minute = parseInt(timeCheck[1]);
@@ -75,7 +75,7 @@ function command(msg) {
         }
     }
     else {
-        msg.reply("I don't know that command! Try c!help");
+        msg.reply("Wrong command or syntax! Try c!help");
     }
 }
 
@@ -92,9 +92,6 @@ function helpCommand(cmdArguments, msg) {
 }
 
 function timeCommand(cmdArguments, msg, hour, minute) {
-    console.log(cmdArguments);
-    console.log(hour);
-    console.log(minute);
     moment.tz.setDefault(cmdArguments[1]);
     sourceTime = moment.tz(moment({"hour": hour, "minute": minute}), cmdArguments[1].toString()); // Create a moment with arguments from user command. cmdArguments[1] is source timezone
     hourSource = moment(sourceTime).hour().toString();
@@ -116,11 +113,6 @@ function timeCommand(cmdArguments, msg, hour, minute) {
     if (minuteTarget.length == 1) {
         minuteTarget = minuteTarget.padStart(2, '0');
     }
-    console.log(hourSource);
-    console.log(minuteSource);
-    console.log(hourTarget);
-    console.log(minuteTarget);
-
     output = "The time " + hourSource + ":" + minuteSource + " in " + cmdArguments[1].toString() + " is " + hourTarget + ":" + minuteTarget + " in " + cmdArguments[2].toString();
     msg.channel.send(output);
     msg.channel.send("If the data seems strange one of your input timezones probably doesn't exist in the database. Try c!timezones to check")
