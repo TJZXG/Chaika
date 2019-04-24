@@ -34,52 +34,47 @@ function command(msg) {
         msg.reply("The current version is " + version);
     } else if (primaryCommand == "help") {
         helpCommand(cmdArguments, msg);
-    } else if (primaryCommand == "time" && typeof cmdArguments[0] !== 'undefined') {
-        timeCheck = cmdArguments[0].split(":");
-        hour = parseInt(timeCheck[0]);
-        minute = parseInt(timeCheck[1]);
-        if (hour < 0 || hour > 23) {
-            msg.reply("Make sure hour is between 0 and 23");
-            return;
-        } else if (minute < 0 || minute > 59) {
-            msg.reply("Make sure minute is between 0 and 59");
-            return;
-        }
-        else if (hour == null || minute == null) {
-            msg.reply("Make sure time input is valid HH:mm");
-            return;
-        } else {
-            timeCommand(cmdArguments, msg, hour, minute);
-        }
+    } else if (primaryCommand == "time") {
+        timeCommand(cmdArguments, msg);
     } else if (primaryCommand == "timezones") {
-        if (cmdArguments[0] == null) {
-            msg.reply("Please specify a `country`, or `country/city!`");
+        timezoneCommand(cmdArguments, msg);
+    }
+}
+
+function timezoneCommand(cmdArguments, msg) {
+    if (cmdArguments[0] == null) {
+        msg.reply("Please specify a `Country`, or `Country/City!`");
+        return;
+    } else {
+        // moment.tz is case sensitive on Country and City inputs
+        filterSplit = cmdArguments[0].toString().split("/");
+        if (typeof filterSplit[1] == 'undefined') {
+            filterName = filterSplit[0].toString().charAt(0).toUpperCase() + filterSplit[0].toString().slice(1); // If only a country is given, the filter is the capitalized country name
+        } else {
+            countryUpper = filterSplit[0].toString().charAt(0).toUpperCase() + filterSplit[0].toString().slice(1);
+            cityUpper = filterSplit[1].toString().charAt(0).toUpperCase() + filterSplit[1].toString().slice(1);
+            filterName = countryUpper + "/" + cityUpper; // Filter is capitalized "Country/City"
+        }
+        const timezoneList = moment.tz.names();
+        function countryFilter(country) {
+            return country.startsWith(filterName);
+        }
+        let timezone = timezoneList.filter(countryFilter);
+        if (timezone == null) {
+            msg.reply("I could not find anything for the Country or Country/City you specified. Please make sure the country and city names are capitalized as this query is case sensitive.");
             return;
         } else {
-            const timezoneList = moment.tz.names();
-            function countryFilter(country) {
-                return country.startsWith(cmdArguments[0]);
-            }
-            let timezone = timezoneList.filter(countryFilter);
-            if (timezone == null) {
-                msg.reply("I could not find anything for the country or country/city you specified");
-                return;
-            } else {
-                msg.reply("First 20 cities/timezones available for " + cmdArguments[0] + ":\n" + timezone.slice(0, 20)); // Only display first 20 due to 2000 character limit on Discord API
-                return;
-            }
+            msg.reply("First 20 cities/timezones available for " + filterName + ":\n" + timezone.slice(0, 20)); // Only display first 20 due to 2000 character limit on Discord API
+            return;
         }
-    }
-    else {
-        msg.reply("Wrong command or syntax! Try c!help");
     }
 }
 
 function helpCommand(cmdArguments, msg) {
     const cmdList = "c!help: You already know what this does!\n" +
-    "c!version: Checks the bot version\n" +
-    "c!time: Timezone conversions\n" +
-    "c!timezones: Check the timezone name for your country/city\n";
+        "c!version: Checks the bot version\n" +
+        "c!time: Timezone conversions\n" +
+        "c!timezones: Check the timezone name for your country/city\n";
 
     if (cmdArguments.length == 0) {
         msg.reply("The list of commands available is: \n" + cmdList + "\nPlease use c!help <command> to check a particular command's syntax.");
@@ -94,32 +89,58 @@ function helpCommand(cmdArguments, msg) {
     }
 }
 
-function timeCommand(cmdArguments, msg, hour, minute) {
-    moment.tz.setDefault(cmdArguments[1]);
-    sourceTime = moment.tz(moment({"hour": hour, "minute": minute}), cmdArguments[1].toString()); // Create a moment with arguments from user command. cmdArguments[1] is source timezone
-    hourSource = moment(sourceTime).hour().toString();
-    // Pad with a leading 0 if h or m in hh:mm is below 10
-    if (hourSource.length == 1) {
-        hourSource = hourSource.padStart(2, '0');
+function timeCommand(cmdArguments, msg) {
+    // Check to make sure the command is not missing any arguments
+    if (typeof cmdArguments[0] == 'undefined') {
+        msg.reply("Please input a time!");
+        return;
+    } else if (typeof cmdArguments[1] == 'undefined') {
+        msg.reply("Please input the source timezone / location");
+        return;
+    } else if (typeof cmdArguments[2] == 'undefined') {
+        msg.reply("Please input the target timezone / location");
+        return;
+    } else {
+        timeCheck = cmdArguments[0].split(":");
+        hour = parseInt(timeCheck[0]);
+        minute = parseInt(timeCheck[1]);
+        if (hour < 0 || hour > 23) {
+            msg.reply("Make sure hour is between 0 and 23");
+            return;
+        } else if (minute < 0 || minute > 59) {
+            msg.reply("Make sure minute is between 0 and 59");
+            return;
+        } else if (hour == null || minute == null) {
+            msg.reply("Make sure time input is valid HH:mm");
+            return;
+        } else {
+            moment.tz.setDefault(cmdArguments[1]);
+            sourceTime = moment.tz(moment({ "hour": hour, "minute": minute }), cmdArguments[1].toString()); // Create a moment with arguments from user command. cmdArguments[1] is source timezone
+            hourSource = moment(sourceTime).hour().toString();
+            // Pad with a leading 0 if h or m in hh:mm is below 10
+            if (hourSource.length == 1) {
+                hourSource = hourSource.padStart(2, '0');
+            }
+            minuteSource = moment(sourceTime).minutes().toString();
+            if (minuteSource.length == 1) {
+                minuteSource = minuteSource.padStart(2, '0');
+            }
+            moment.tz.setDefault(cmdArguments[2]);
+            targetTime = moment(sourceTime).tz(cmdArguments[2].toString());
+            hourTarget = moment(targetTime).hour().toString();
+            if (hourTarget.length == 1) {
+                hourTarget = hourTarget.padStart(2, '0');
+            }
+            minuteTarget = moment(targetTime).minutes().toString();
+            if (minuteTarget.length == 1) {
+                minuteTarget = minuteTarget.padStart(2, '0');
+            }
+            output = "The time " + hourSource + ":" + minuteSource + " in " + cmdArguments[1].toString() + " is " + hourTarget + ":" + minuteTarget + " in " + cmdArguments[2].toString();
+            msg.channel.send(output);
+            msg.channel.send("Times look strange? One or both of your timezone names probably doesn't exist in the database. Check c!timezones and c!help timezones");
+            return;
+        }
     }
-    minuteSource = moment(sourceTime).minutes().toString();
-    if (minuteSource.length == 1) {
-        minuteSource = minuteSource.padStart(2, '0');
-    }
-    moment.tz.setDefault(cmdArguments[2]);
-    targetTime = moment(sourceTime).tz(cmdArguments[2].toString());
-    hourTarget = moment(targetTime).hour().toString();
-    if (hourTarget.length == 1) {
-        hourTarget = hourTarget.padStart(2, '0');
-    }
-    minuteTarget = moment(targetTime).minutes().toString();
-    if (minuteTarget.length == 1) {
-        minuteTarget = minuteTarget.padStart(2, '0');
-    }
-    output = "The time " + hourSource + ":" + minuteSource + " in " + cmdArguments[1].toString() + " is " + hourTarget + ":" + minuteTarget + " in " + cmdArguments[2].toString();
-    msg.channel.send(output);
-    msg.channel.send("If the data seems strange one of your input timezones probably doesn't exist in the database. Try c!timezones to check")
-    return;
 }
 
 function richPresence() {
