@@ -4,10 +4,7 @@ const version = require('./package.json').version;
 const botSecretToken = process.env.botSecretToken;
 console.log("Running version " + version);
 var moment = require('moment-timezone');
-const cmdList = "c!help: You already know what this does!\n" +
-    "c!version: Checks the bot version\n" +
-    "c!time: Timezone conversions\n" +
-    "c!timezones: Check the timezone name for your country/city\n"
+
 
 client.on('ready', () => {
     console.log("Connected as " + client.user.tag);
@@ -19,17 +16,17 @@ client.on('message', msg => {
     if (msg.author == client.user) {
         return;
     }
-
-    if (msg.content.startsWith("c!")) {
+    // Accept messages that start with c! or C! as command
+    if (msg.content.startsWith("c!") || msg.content.startsWith("C!")) {
         command(msg);
     }
 });
 
 function command(msg) {
-    let fullCommand = msg.content.substr(2); // Remove c!
+    let fullCommand = msg.content.substr(2).toLowerCase(); // Remove c! and set to lower case
     let splitCommand = fullCommand.split(" ");
-    let primaryCommand = splitCommand[0];
-    let cmdArguments = splitCommand.slice(1); // cmdArguments may be empty
+    let primaryCommand = splitCommand[0]; // First word after c! is the command, rest are arguments
+    let cmdArguments = splitCommand.slice(1); // cmdArguments may be empty - check for this if accessing it
     console.log(msg.member.user + msg.member.user.tag + " sent command " + primaryCommand);
     console.log(msg.member.user + msg.member.user.tag + " sent arguments " + cmdArguments);
 
@@ -55,7 +52,6 @@ function command(msg) {
             timeCommand(cmdArguments, msg, hour, minute);
         }
     } else if (primaryCommand == "timezones") {
-        // Total list of all timezone entries is longer than 2000 lines and results in unhandled Promise rejection
         if (cmdArguments[0] == null) {
             msg.reply("Please specify a `country`, or `country/city!`");
             return;
@@ -69,7 +65,7 @@ function command(msg) {
                 msg.reply("I could not find anything for the country or country/city you specified");
                 return;
             } else {
-                msg.reply("First 20 cities/timezones available for " + cmdArguments[0] + ":\n" + timezone.slice(0, 20));
+                msg.reply("First 20 cities/timezones available for " + cmdArguments[0] + ":\n" + timezone.slice(0, 20)); // Only display first 20 due to 2000 character limit on Discord API
                 return;
             }
         }
@@ -80,10 +76,17 @@ function command(msg) {
 }
 
 function helpCommand(cmdArguments, msg) {
+    const cmdList = "c!help: You already know what this does!\n" +
+    "c!version: Checks the bot version\n" +
+    "c!time: Timezone conversions\n" +
+    "c!timezones: Check the timezone name for your country/city\n";
+
     if (cmdArguments.length == 0) {
         msg.reply("The list of commands available is: \n" + cmdList + "\nPlease use c!help <command> to check a particular command's syntax.");
+    } else if (cmdArguments.length > 0 && cmdArguments[0] == "version") {
+        msg.reply("Shows the bot's current running version. Mostly for testing right after deployment.")
     } else if (cmdArguments.length > 0 && cmdArguments[0] == "time") {
-        msg.reply("c!time <time in hh:mm> <origin timezone city> <target timezone city>. Limited support for timezone names (like UTC, MST).\nEx: c!time 8:00 UTC America/Denver");
+        msg.reply("c!time <time in hh:mm> <origin timezone city> <target timezone city>. Timezone names supported (like UTC, MST) but not DST aware.\nEx: c!time 8:00 UTC America/Denver");
     } else if (cmdArguments.length > 0 && cmdArguments[0] == "timezones") {
         msg.reply("c!timezones <country> or <country/city> will show you valid timezone names for your country or country/city to use with c!time\nEx: c!timezones Australia\nc!timezones America/Denver");
     } else {
