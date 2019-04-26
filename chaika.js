@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const version = require('./package.json').version;
+const tzdata = require('./node_modules/moment-timezone/data/meta/latest.json');
 const botSecretToken = process.env.botSecretToken;
 console.log("Running version " + version);
 var moment = require('moment-timezone');
@@ -44,6 +45,11 @@ function command(msg) {
 function timezoneCommand(cmdArguments, msg) {
     if (cmdArguments[0] == null) {
         msg.reply("Please specify a `Country`, or `Country/City!`");
+        return;
+        /* Too many zone names start with America in the timezone dataset, even for those of other countries.
+         Directly point to America timezone object from json */
+    } else if (cmdArguments[0] == "america" || cmdArguments[0] == "us" || cmdArguments[0] == "usa") {
+        msg.reply("Timezones for America: " + tzdata.countries.US.zones);
         return;
     } else {
         // moment.tz is case sensitive on Country and City inputs
