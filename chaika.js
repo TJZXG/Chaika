@@ -175,7 +175,7 @@ function buffCommand(cmdArguments, msg) {
         } else {
             msg.channel.send("I'll remind you in " + cmdArguments[0] + " to refresh buffs!")
             let countdownMs = (timerHour*60 + timerMinute)*60*1000
-            setInterval(reminder, countdownMs);
+            setTimeout(reminder, countdownMs);
             function reminder() {
                 msg.channel.send("Time's up! Refresh buffs please!");
                 return;
