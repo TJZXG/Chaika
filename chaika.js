@@ -39,6 +39,8 @@ function command(msg) {
         timeCommand(cmdArguments, msg);
     } else if (primaryCommand == "timezones") {
         timezoneCommand(cmdArguments, msg);
+    } else if (primaryCommand == "buff") {
+        buffCommand(cmdArguments, msg);
     }
 }
 
@@ -80,7 +82,8 @@ function helpCommand(cmdArguments, msg) {
     const cmdList = "c!help: You already know what this does!\n" +
         "c!version: Checks the bot version\n" +
         "c!time: Timezone conversions\n" +
-        "c!timezones: Check the timezone name for your country/city\n";
+        "c!timezones: Check the timezone name for your country/city\n" +
+        "c!buff: Set a timer to remind you to reapply buffs\n";
 
     if (cmdArguments.length == 0) {
         msg.reply("The list of commands available is: \n" + cmdList + "\nPlease use c!help <command> to check a particular command's syntax.");
@@ -90,6 +93,8 @@ function helpCommand(cmdArguments, msg) {
         msg.reply("c!time <time in hh:mm> <origin timezone city> <target timezone city>. Timezone names supported (like UTC, MST) but not DST aware.\nEx: c!time 8:00 UTC America/Denver");
     } else if (cmdArguments.length > 0 && cmdArguments[0] == "timezones") {
         msg.reply("c!timezones <country> or <country/city> will show you valid timezone names for your country or country/city to use with c!time\nEx: c!timezones Australia\nc!timezones America/Denver");
+    } else if (cmdArguments.length > 0 && cmdArguments[0] == "buff") {
+        msg.reply("c!buff <##h##> to set a reminder when buff will run out. The hour must be specified, minute is optional. Ex: c!buff 8h30, c!buff 0h45, c!buff 8h");
     } else {
         msg.channel.send("I don't know anything about that ¯\\_(ツ)_/¯");
     }
@@ -145,6 +150,36 @@ function timeCommand(cmdArguments, msg) {
             msg.channel.send(output);
             msg.channel.send("Times look strange? One or both of your timezone names probably doesn't exist in the database. Check c!timezones and c!help timezones");
             return;
+        }
+    }
+}
+
+function buffCommand(cmdArguments, msg) {
+    // Check to make sure the command is not missing any arguments
+    if (typeof cmdArguments[0] == 'undefined') {
+        msg.reply("Please input a time in the format of ##h##! Ex: 18h30, 8h, 0h20");
+        return;
+    } else {
+        let timeArray = cmdArguments[0].split("h");
+        let timerHour = parseInt(timeArray[0]);
+        let timerMinute = parseInt(timeArray[1]);
+        if (timerHour < 0 || timerHour > 99999) {
+            msg.reply("I'll be dead by then!");
+            return;
+        } else if (timerMinute < 0 || timerMinute > 59) {
+            msg.reply("Make sure minute is between 0 and 59");
+            return;
+        } else if (timerHour == null && timerMinute == null) {
+            msg.reply("Make sure time input is valid ##h##. Ex: 18h30, 8h, 0h35");
+            return;
+        } else {
+            msg.channel.send("I'll remind you in " + cmdArguments[0] + " to refresh buffs!")
+            let countdownMs = (timerHour*60 + timerMinute)*60*1000
+            setInterval(reminder, countdownMs);
+            function reminder() {
+                msg.channel.send("Time's up! Refresh buffs please!");
+                return;
+            }
         }
     }
 }
