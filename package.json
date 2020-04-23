@@ -1,6 +1,6 @@
 {
   "name": "chaika.js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Chaika - a Discord chatbot",
   "main": "chaika.js",
   "engines": {

@@ -21,6 +21,9 @@ client.on('message', msg => {
     if (msg.content.startsWith("c!") || msg.content.startsWith("C!")) {
         command(msg);
     }
+    if (msg.content.startsWith("Happy birthday") || msg.content.startsWith("happy birthday")) {
+        birthday(msg);
+    }
 });
 
 function command(msg) {
@@ -182,6 +185,11 @@ function buffCommand(cmdArguments, msg) {
             }
         }
     }
+}
+
+// Bonus
+function birthday(msg) {
+    msg.reply("Mubashir says you're welcome.")
 }
 
 function richPresence() {
