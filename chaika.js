@@ -12,6 +12,22 @@ client.on('ready', () => {
     richPresence();
 });
 
+// Send alert to check GW defense on Sundays
+function sundayReminder() {
+    var reminderTime = moment(23, "HH"); //Send reminder at 23:00 UTC
+    // Check every hour if current time exceeds 23:00 UTC. Send reminder if true
+    if (moment().isAfter(reminderTime) == true) {
+        client.channels.get("561730202561150978").send("<@&733159915849252945>, make sure Guild War Defense is set!")
+    } else {
+        setTimeout(sundayReminder, 3600000);
+    }
+}
+
+// Only execute sundayReminder on Sundays
+if (moment().day() == 0) {
+    sundayReminder();
+}
+
 client.on('message', msg => {
     // Prevent bot from responding to itself
     if (msg.author == client.user) {
