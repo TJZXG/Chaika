@@ -14,9 +14,10 @@ client.on('ready', () => {
 
 // Send alert to check GW defense on Sundays
 function sundayReminder() {
-    var reminderTime = moment(23, "HH"); //Send reminder at 23:00 UTC
-    // Check every hour if current time exceeds 23:00 UTC. Send reminder if true
-    if (moment().isAfter(reminderTime) == true) {
+    var reminderTime = moment(11, "HH"); // Reminder start time
+    var reminderTimeEnd = moment (12, "HH"); // Do not send reminder after this time 
+    // Check every hour if current time is between reminder start time and end time. Send reminder if true
+    if (moment().isBetween(reminderTime, reminderTimeEnd, undefined, '[]') == true) {
         client.channels.get("561730202561150978").send("<@&733159915849252945>, make sure Guild War Defense is set!")
     } else {
         setTimeout(sundayReminder, 3600000);
