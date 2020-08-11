@@ -14,8 +14,13 @@ client.on('ready', () => {
 
 // Send alert to check GW defense on Sundays
 function sundayReminder() {
+    // Prevent any further execution of sundayReminder as soon as Monday rolls around
+    if (moment().day() == 1) {
+        break;
+    }
+
     var reminderTime = moment(11, "HH"); // Reminder start time
-    var reminderTimeEnd = moment (12, "HH"); // Do not send reminder after this time 
+    var reminderTimeEnd = moment(12, "HH"); // Do not send reminder after this time 
     // Check every hour if current time is between reminder start time and end time. Send reminder if true
     if (moment().isBetween(reminderTime, reminderTimeEnd, undefined, '[]') == true) {
         client.channels.get("561730202561150978").send("<@&733159915849252945>, make sure Guild War Defense is set!")
@@ -194,7 +199,7 @@ function buffCommand(cmdArguments, msg) {
             return;
         } else {
             msg.channel.send("I'll remind you in " + cmdArguments[0] + " to refresh buffs!")
-            let countdownMs = (timerHour*60 + timerMinute)*60*1000
+            let countdownMs = (timerHour * 60 + timerMinute) * 60 * 1000
             setTimeout(reminder, countdownMs);
             function reminder() {
                 msg.reply("Time's up! Refresh buffs please!");
