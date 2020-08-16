@@ -22,7 +22,7 @@ function sundayReminder() {
     } else {
         // Prevent any further execution of sundayReminder as soon as Monday rolls around
         if (moment().day() == 1) {
-            break;
+            return();
         }
         setTimeout(sundayReminder, 3600000);
     }
