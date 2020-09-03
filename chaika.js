@@ -63,10 +63,10 @@ function command(msg) {
         timeCommand(cmdArguments, msg);
     } else if (primaryCommand == "timezones") {
         timezoneCommand(cmdArguments, msg);
-    } else if (primaryCommand == "buff") {
-        buffCommand(cmdArguments, msg);
+    } else if (primaryCommand == "timer") {
+        timerCommand(cmdArguments, msg);
     } else if (primaryCommand == "gearcalc" || "autism") {
-        msg.reply("I bless you with Eff Res or a min roll :dab: https://meowyih.github.io/epic7-gear/index.html?lang=en")
+        msg.reply("I bless you with Eff Res or a min roll :dab: https://meowyih.github.io/epic7-gear/index.html?lang=en");
     }
 }
 
@@ -109,7 +109,8 @@ function helpCommand(cmdArguments, msg) {
         "c!version: Checks the bot version\n" +
         "c!time: Timezone conversions\n" +
         "c!timezones: Check the timezone name for your country/city\n" +
-        "c!buff: Set a timer to remind you to reapply buffs\n";
+        "c!gearcalc: Gear Potential Calculator\n" +
+        "c!timer: Set a timer\n";
 
     if (cmdArguments.length == 0) {
         msg.reply("The list of commands available is: \n" + cmdList + "\nPlease use c!help <command> to check a particular command's syntax.");
@@ -119,8 +120,10 @@ function helpCommand(cmdArguments, msg) {
         msg.reply("c!time <time in hh:mm> <origin timezone city> <target timezone city>. Timezone names supported (like UTC, MST) but not DST aware.\nEx: c!time 8:00 UTC America/Denver");
     } else if (cmdArguments.length > 0 && cmdArguments[0] == "timezones") {
         msg.reply("c!timezones <country> or <country/city> will show you valid timezone names for your country or country/city to use with c!time\nEx: c!timezones Australia\nc!timezones America/Denver");
-    } else if (cmdArguments.length > 0 && cmdArguments[0] == "buff") {
-        msg.reply("c!buff <##h##> to set a reminder when buff will run out. The hour must be specified, minute is optional. Ex: c!buff 8h30, c!buff 0h45, c!buff 8h");
+    } else if (cmdArguments.length > 0 && cmdArguments[0] == "timer") {
+        msg.reply("c!timer <##h##> to set a reminder when timer will run out. The hour must be specified, minute is optional. Ex: c!timer 8h30, c!timer 0h45, c!timer 8h");
+    } else if (cmdArguments.length > 0 && cmdArguments[0] == "gearcalc") {
+        msg.reply("Link for Gear Potential Calculator");
     } else {
         msg.channel.send("I don't know anything about that ¯\\_(ツ)_/¯");
     }
@@ -180,7 +183,7 @@ function timeCommand(cmdArguments, msg) {
     }
 }
 
-function buffCommand(cmdArguments, msg) {
+function timerCommand(cmdArguments, msg) {
     // Check to make sure the command is not missing any arguments
     if (typeof cmdArguments[0] == 'undefined') {
         msg.reply("Please input a time in the format of ##h##! Ex: 18h30, 8h, 0h20");
@@ -199,11 +202,11 @@ function buffCommand(cmdArguments, msg) {
             msg.reply("Make sure time input is valid ##h##. Ex: 18h30, 8h, 0h35");
             return;
         } else {
-            msg.channel.send("I'll remind you in " + cmdArguments[0] + " to refresh buffs!")
+            msg.channel.send("I'll remind you in " + cmdArguments[0] + " that time's up!")
             let countdownMs = (timerHour * 60 + timerMinute) * 60 * 1000
             setTimeout(reminder, countdownMs);
             function reminder() {
-                msg.reply("Time's up! Refresh buffs please!");
+                msg.reply("Time's up!");
                 return;
             }
         }
