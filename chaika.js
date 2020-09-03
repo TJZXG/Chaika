@@ -66,7 +66,7 @@ function command(msg) {
     } else if (primaryCommand == "timer") {
         timerCommand(cmdArguments, msg);
     } else if (primaryCommand == "gearcalc" || "autism") {
-        msg.reply("I bless you with Eff Res or a min roll :dab: https://meowyih.github.io/epic7-gear/index.html?lang=en");
+        msg.reply("I bless you with Eff Res or a min roll <:mldab2:713127647521013783> https://meowyih.github.io/epic7-gear/index.html?lang=en");
     }
 }
 
