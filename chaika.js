@@ -12,13 +12,17 @@ client.on('ready', () => {
     richPresence();
 });
 
+// Get your bot's secret token from: https://discordapp.com/developers/applications/
+client.login(botSecretToken);
+
 // Send alert to check GW defense on Sundays
 function sundayReminder() {
     var reminderTime = moment(11, "HH"); // Reminder start time
     var reminderTimeEnd = moment(12, "HH"); // Do not send reminder after this time 
     // Check every hour if current time is between reminder start time and end time. Send reminder if true
     if (moment().isBetween(reminderTime, reminderTimeEnd, undefined, '[]') == true) {
-        client.channels.get("561730202561150978").send("<@&733159915849252945>, make sure Guild War Defense is set!")
+        client.channels.cache.get("561730202561150978").send("<@&733159915849252945>, make sure Guild War Defense is set!")
+        console.log('Guild War reminder sent at: ' + moment());
     } else {
         // Prevent any further execution of sundayReminder as soon as Monday rolls around
         if (moment().day() == 1) {
@@ -232,7 +236,6 @@ function richPresence() {
         { "name": "communist propaganda", "type": "WATCHING" }
     ];
     presenceIndex = Math.floor(Math.random() * presentActivity.length);
-    console.log("Next index :" + presenceIndex);
     client.user.setActivity(presentActivity[presenceIndex].name, { type: presentActivity[presenceIndex].type });
 }
 
