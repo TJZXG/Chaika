@@ -15,27 +15,39 @@ client.on('ready', () => {
 // Get your bot's secret token from: https://discordapp.com/developers/applications/
 client.login(botSecretToken);
 
-// Send alert to check GW defense on Sundays
+// Weekly alerts
 function sundayReminder() {
-    var reminderTime = moment(11, "HH"); // Reminder start time
-    var reminderTimeEnd = moment(12, "HH"); // Do not send reminder after this time 
+    if (moment().day() !== 0) {
+        return;
+    }
+    let reminderTime = moment(11, "HH"); // Reminder start time
+    let reminderTimeEnd = moment(12, "HH"); // Do not send reminder after this time 
     // Check every hour if current time is between reminder start time and end time. Send reminder if true
     if (moment().isBetween(reminderTime, reminderTimeEnd, undefined, '[]') == true) {
-        client.channels.cache.get("561730202561150978").send("<@&733159915849252945>, make sure Guild War Defense is set!")
-        console.log('Guild War reminder sent at: ' + moment());
+        client.channels.cache.get("561730202561150978").send("Make sure Guild War Defense is set!")
+        return;
     } else {
-        // Prevent any further execution of sundayReminder as soon as Monday rolls around
-        if (moment().day() == 1) {
-            return;
-        }
-        setTimeout(sundayReminder, 3600000);
+        setTimeout(sundayReminder, 3550000);
     }
 }
 
-// Only execute sundayReminder on Sundays
-if (moment().day() == 0) {
-    sundayReminder();
+function saturdayReminder() {
+    // Note Saturday Reminder still runs on Sunday (GMT)
+    if (moment().day() !== 0) {
+        return;
+    }
+    let satReminder = moment(3, "HH");
+    let satReminderEnd = moment(4, "HH");
+    if (moment().isBetween(satReminder, satReminderEnd, undefined, '[]') == true) {
+        client.channels.cache.get("222142945149583360").send("Use Parametric Transformer!")
+        return;
+    } else {
+        setTimeout(saturdayReminder, 3550000);
+    }
 }
+
+sundayReminder();
+saturdayReminder();
 
 client.on('message', msg => {
     // Prevent bot from responding to itself
@@ -45,9 +57,6 @@ client.on('message', msg => {
     // Accept messages that start with c! or C! as command
     if (msg.content.startsWith("c!") || msg.content.startsWith("C!")) {
         command(msg);
-    }
-    if (msg.content.startsWith("Happy birthday") || msg.content.startsWith("happy birthday")) {
-        birthday(msg);
     }
 });
 
@@ -69,7 +78,7 @@ function command(msg) {
         timezoneCommand(cmdArguments, msg);
     } else if (primaryCommand == "timer") {
         timerCommand(cmdArguments, msg);
-    } else if (primaryCommand == "gearcalc" || "autism") {
+    } else if (primaryCommand == "gearcalc") {
         msg.reply("I bless you with Eff Res or a min roll <:mldab2:713127647521013783>\nhttps://meowyih.github.io/epic7-gear/index.html?lang=en");
     }
 }
@@ -215,11 +224,6 @@ function timerCommand(cmdArguments, msg) {
             }
         }
     }
-}
-
-// Bonus
-function birthday(msg) {
-    msg.reply("Mubashir says you're welcome.")
 }
 
 function richPresence() {
